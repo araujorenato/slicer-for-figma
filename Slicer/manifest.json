@@ -1,0 +1,7 @@
+{
+  "name": "Slicer",
+  "id": "755582372562882351",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html"
+}
