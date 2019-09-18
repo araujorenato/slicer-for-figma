@@ -18,22 +18,24 @@
   
   <div class="interaction">
      <label>
-       <input type="radio" name="option" class="select-input" id="padding-option" checked>
+       <input type="radio" name="option" class="select-input" id="padding-option" checked onclick="hidesize();">
        <div class="select-item first-option">Padding</div>
      </label>
      <label>
-        <input type="radio" name="option" class="select-input" id="slice-size">
+        <input type="radio" name="option" class="select-input" id="slice-size" onclick="hidepadding();">
         <div class="select-item second-option">Slice size</div>
       </label>
   </div>
   
-  <input type="input" class="input padding-slice" id="padding" value="0">
+  <div class="padding-slice">
+    <input type="input" class="input" id="padding" value="0" autofocus>
+  </div>
+  
 
 
   <div class="size-slice" id="sizediv" >
-    <input type="input" class="input" id="size-w" value="0" style="flex:12"/>
-    <div class="sapce" style="flex:1"></div>
-    <input type="input" class="input" id="size-h" value="0"style="flex:12" />
+    <input type="input" class="input" id="size-w" value="0">
+    <input type="input" class="input" id="size-h" value="0">
   </div>
   
 
@@ -42,7 +44,7 @@
 
     <div class="buttons">
     <button class="link" id="cancel">Cancel</button>
-    <button class="primary" id="slice">Slice</button>
+    <button class="primary" id="slice" onclick="slice();">Slice</button>
     </div>
       
   </div>
@@ -52,11 +54,35 @@
 
 <script>
 
-document.getElementById('slice').onclick = () => {
-  const textbox = document.getElementById('padding');
-  const padding = parseInt(textbox.value);
-  parent.postMessage({ pluginMessage: { type: 'generate-slices', padding } }, '*')
+if (document.getElementById('padding-option').checked){
+  document.querySelector(".size-slice").style.display = "none";
 }
+
+function hidepadding(){
+  document.querySelector(".padding-slice").style.display = "none";
+  document.querySelector(".size-slice").style.display = "flex";
+}
+
+function hidesize(){
+  document.querySelector(".size-slice").style.display = "none";
+  document.querySelector(".padding-slice").style.display = "block";
+}
+
+
+  function slice() {
+    if (document.getElementById('padding-option').checked){
+      const textbox = document.getElementById('padding');
+      const padding = parseInt(textbox.value);
+      parent.postMessage({ pluginMessage: { type: 'slicepadding', padding } }, '*')
+    }else if (document.getElementById('slice-size').checked){
+      const width = document.getElementById('size-w');
+      const height = document.getElementById('size-h');
+      const w = parseInt(width.value);
+      const h = parseInt(height.value);
+      parent.postMessage({ pluginMessage: { type: 'slicesize', w, h } }, '*')
+    } 
+  }
+
 
 document.getElementById('cancel').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
@@ -81,6 +107,7 @@ input.addEventListener("keyup", function(event){
           box-sizing: border-box;
   
   margin:0;
+  padding:0;
   font-family: roboto;
   }
 
@@ -260,14 +287,16 @@ label{
 
 .size-slice{
   display: flex;
-  width: 100%;
-  background-color: #999999;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
-.size-slice .input{
-  width: 10px;
-  flex: 0 0;
+
+.size-slice .input:first-child{
+  margin-right: 8px;
 }
+
+
 
 
 .padding{
